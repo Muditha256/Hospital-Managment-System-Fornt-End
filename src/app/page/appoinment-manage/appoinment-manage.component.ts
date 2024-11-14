@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { Appoinment } from '../../model/Appointment';
 
 @Component({
   selector: 'app-appoinment-manage',
@@ -13,16 +14,18 @@ import Swal from 'sweetalert2';
 })
 export class AppoinmentManageComponent {
 
-  public appoinmentList:any=[];
+  public appoinmentList:Appoinment[]=[];
 
   constructor(private http:HttpClient){
     this.loadTable();
+    
   }
   
   loadTable(){
-    this.http.get("http://localhost:8080/appointment/get-all").subscribe(res=>{
-      console.log(res);
-      this.appoinmentList=res;
+    this.http.get<Appoinment[]>("http://localhost:8080/appointment/get-all").subscribe(data=>{
+      data.forEach(obj=>{
+        this.appoinmentList.push(obj);
+      })
     })
   }
 
