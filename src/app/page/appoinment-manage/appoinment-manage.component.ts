@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { Appoinment } from '../../model/Appointment';
+import { Appointment } from '../../model/Appointment';
 
 @Component({
   selector: 'app-appoinment-manage',
@@ -14,18 +14,16 @@ import { Appoinment } from '../../model/Appointment';
 })
 export class AppoinmentManageComponent {
 
-  public appoinmentList:Appoinment[]=[];
+  public appointmentList:any=[];
 
   constructor(private http:HttpClient){
     this.loadTable();
-    
   }
-  
+
   loadTable(){
-    this.http.get<Appoinment[]>("http://localhost:8080/appointment/get-all").subscribe(data=>{
-      data.forEach(obj=>{
-        this.appoinmentList.push(obj);
-      })
+    this.http.get("http://localhost:8080/appointment/get-all").subscribe(res=>{
+      console.log(res);
+      this.appointmentList=res;
     })
   }
 
@@ -48,14 +46,17 @@ export class AppoinmentManageComponent {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
+
         this.http.delete(`http://localhost:8080/appointment/delete-appointment/${id}`).subscribe(res=>{
           swalWithBootstrapButtons.fire({
             title: "Deleted!",
             text: "Your file has been deleted.",
             icon: "success"
           });
+
           this.loadTable();
         })
+
       } else if (
         /* Read more about handling dismissals below */
         result.dismiss === Swal.DismissReason.cancel
@@ -68,19 +69,18 @@ export class AppoinmentManageComponent {
       }
     });
     
-    
   }
 
-  public selectedAppoinment:any={};
+public selectedAppoinmet:any ={};
 
-  selectAppoinment(appoinment:any){
-      console.log(appoinment);
-      this.selectedAppoinment=appoinment;
-      
+selectAppoinment(appointment:any){
+      console.log(appointment);
+      this.selectedAppoinmet=appointment;
+
   }
+
 
   updateAppointment(){
-
     Swal.fire({
       title: "Do you want to save the changes?",
       showDenyButton: true,
@@ -90,14 +90,14 @@ export class AppoinmentManageComponent {
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
-        this.http.put("http://localhost:8080/appointment/update-appointment",this.selectedAppoinment).subscribe(res=>{
+        this.http.put("http://localhost:8080/appointment/update-appointment",this.selectedAppoinmet).subscribe(res=>{
           Swal.fire("Saved!", "", "success");
-          this.loadTable();
         })
       } else if (result.isDenied) {
         Swal.fire("Changes are not saved", "", "info");
       }
     });
-    
+
+  
   }
 }
